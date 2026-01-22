@@ -79,6 +79,19 @@ def setup_company(config_b64):
         frappe.db.commit()
         print("[SETUP] System Settings updated with setup_complete=1, enable_onboarding=0")
 
+        # Step 2b: Mark all installed apps as setup complete in Installed Application table
+        # This is CRITICAL for ERPNext v16 - frappe.is_setup_complete() checks this table
+        for app_name in ["frappe", "erpnext"]:
+            if frappe.db.exists("Installed Application", {"app_name": app_name}):
+                frappe.db.set_value(
+                    "Installed Application",
+                    {"app_name": app_name},
+                    "is_setup_complete",
+                    1
+                )
+                print(f"[SETUP] Marked {app_name} as setup complete in Installed Application")
+        frappe.db.commit()
+
         # Step 3: Create Warehouse Types (required for ERPNext Stock module)
         for wt in ["Transit", "Stores", "Goods In Transit", "Virtual"]:
             if not frappe.db.exists("Warehouse Type", wt):
