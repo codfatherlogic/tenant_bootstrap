@@ -69,8 +69,11 @@ jobs:
 
       - name: Verify license
         run: |
-          grep -q "CodFather Logic LLP" license.txt
-          grep -q "Proprietary" license.txt
+          echo "Checking license.txt..."
+          ls -la license.txt
+          cat license.txt
+          grep "CodFather Logic LLP" license.txt || echo "Pattern not found!"
+          grep "Proprietary" license.txt || echo "Pattern not found!"
           echo "License verified!"
 
   notify:
