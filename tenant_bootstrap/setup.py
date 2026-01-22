@@ -254,7 +254,15 @@ def create_user(config_b64):
             user.add_roles("System Manager")
             frappe.db.commit()
             print(f"USER_SUCCESS: User {email} created successfully")
-            return {"success": True, "message": f"User {email} created"}
+
+        # Also set Administrator password for "Login as Admin" functionality
+        try:
+            update_password("Administrator", password)
+            print(f"[USER] Administrator password also updated")
+        except Exception as admin_err:
+            print(f"[USER] Warning: Could not update Administrator password: {admin_err}")
+
+        return {"success": True, "message": f"User {email} created/updated"}
 
     except Exception as e:
         print(f"USER_FAILED: {e!s}")
