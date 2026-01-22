@@ -72,7 +72,8 @@ jobs:
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-16 ~/frappe-bench
+          # Use specific Frappe v16.0.0 tag that supports Python 3.12
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch v16.0.0 ~/frappe-bench
 
       - name: Install tenant_bootstrap
         working-directory: /home/runner/frappe-bench
