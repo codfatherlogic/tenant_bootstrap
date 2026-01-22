@@ -33,7 +33,7 @@ jobs:
         ports:
           - 11000:6379
       mariadb:
-        image: mariadb:11.8
+        image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
@@ -72,7 +72,7 @@ jobs:
       - name: Setup Frappe Bench
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-16 ~/frappe-bench
 
       - name: Install tenant_bootstrap
         working-directory: /home/runner/frappe-bench

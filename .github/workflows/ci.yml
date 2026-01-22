@@ -79,7 +79,7 @@ jobs:
       - name: Setup
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-16 ~/frappe-bench
 
       - name: Install
         working-directory: /home/runner/frappe-bench
@@ -88,7 +88,6 @@ jobs:
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin test_site
           bench --site test_site install-app tenant_bootstrap
-          bench build
         env:
           CI: 'Yes'
 
