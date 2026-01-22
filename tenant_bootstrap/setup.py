@@ -16,9 +16,11 @@ Usage:
         --kwargs '{"config_b64": "..."}'
 """
 
-import frappe
-import json
 import base64
+import json
+import traceback
+
+import frappe
 
 
 def setup_company(config_b64):
@@ -61,7 +63,7 @@ def setup_company(config_b64):
 
         # Step 1: Mark setup complete in site_config.json
         site_config_path = frappe.get_site_path("site_config.json")
-        with open(site_config_path, "r") as f:
+        with open(site_config_path) as f:
             site_config = json.load(f)
         site_config["setup_complete"] = 1
         with open(site_config_path, "w") as f:
@@ -183,8 +185,7 @@ def setup_company(config_b64):
             return {"success": False, "message": f"Company '{company_name}' not found after creation"}
 
     except Exception as e:
-        import traceback
-        print(f"SETUP_FAILED: {str(e)}")
+        print(f"SETUP_FAILED: {e!s}")
         traceback.print_exc()
         return {"success": False, "message": str(e)}
 
@@ -256,7 +257,6 @@ def create_user(config_b64):
             return {"success": True, "message": f"User {email} created"}
 
     except Exception as e:
-        import traceback
-        print(f"USER_FAILED: {str(e)}")
+        print(f"USER_FAILED: {e!s}")
         traceback.print_exc()
         return {"success": False, "message": str(e)}
