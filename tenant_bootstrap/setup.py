@@ -225,6 +225,7 @@ def create_user(config_b64):
         if frappe.db.exists("User", email):
             # Update existing user password
             update_password(email, password)
+            frappe.db.commit()
             # Ensure user is enabled and has correct roles
             user = frappe.get_doc("User", email)
             user.enabled = 1
@@ -249,6 +250,7 @@ def create_user(config_b64):
 
             # Set password after creation
             update_password(email, password)
+            frappe.db.commit()
 
             # Add System Manager role
             user.add_roles("System Manager")
@@ -258,6 +260,7 @@ def create_user(config_b64):
         # Also set Administrator password for "Login as Admin" functionality
         try:
             update_password("Administrator", password)
+            frappe.db.commit()
             print("[USER] Administrator password also updated")
         except Exception as admin_err:
             print(f"[USER] Warning: Could not update Administrator password: {admin_err}")
