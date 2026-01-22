@@ -258,7 +258,7 @@ def create_user(config_b64):
         # Also set Administrator password for "Login as Admin" functionality
         try:
             update_password("Administrator", password)
-            print(f"[USER] Administrator password also updated")
+            print("[USER] Administrator password also updated")
         except Exception as admin_err:
             print(f"[USER] Warning: Could not update Administrator password: {admin_err}")
 
