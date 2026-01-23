@@ -130,15 +130,25 @@ app_license = "mit"
 
 # Document Events
 # ---------------
-# Hook on document methods and events
+# Hook on document methods and events - Enforce SaaS plan limits
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "User": {
+        "before_insert": "tenant_bootstrap.usage_limits.validate_user_limit"
+    },
+    "Customer": {
+        "before_insert": "tenant_bootstrap.usage_limits.validate_customer_limit"
+    },
+    "Supplier": {
+        "before_insert": "tenant_bootstrap.usage_limits.validate_supplier_limit"
+    },
+    "Company": {
+        "before_insert": "tenant_bootstrap.usage_limits.validate_company_limit"
+    },
+    "Sales Invoice": {
+        "before_submit": "tenant_bootstrap.usage_limits.validate_invoice_limit"
+    }
+}
 
 # Scheduled Tasks
 # ---------------
