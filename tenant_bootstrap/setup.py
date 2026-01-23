@@ -92,6 +92,12 @@ def setup_company(config_b64):
                 print(f"[SETUP] Marked {app_name} as setup complete in Installed Application")
         frappe.db.commit()
 
+        # Step 2c: Set desktop home page to prevent setup wizard from being the default landing page
+        # ROOT CAUSE FIX: Without this, desktop:home_page defaults to "setup-wizard" causing infinite redirect
+        frappe.db.set_default("desktop:home_page", "home")
+        frappe.db.commit()
+        print("[SETUP] Set desktop:home_page to 'home' (prevents setup wizard redirect)")
+
         # Step 3: Create Warehouse Types (required for ERPNext Stock module)
         for wt in ["Transit", "Stores", "Goods In Transit", "Virtual"]:
             if not frappe.db.exists("Warehouse Type", wt):
