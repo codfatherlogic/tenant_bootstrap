@@ -290,3 +290,95 @@ def create_user(config_b64):
         print(f"USER_FAILED: {e!s}")
         traceback.print_exc()
         return {"success": False, "message": str(e)}
+
+
+@frappe.whitelist(allow_guest=True)
+def get_usage_stats():
+    """
+    Get usage statistics for the tenant site.
+    Called by the SaaS Controller to sync usage data.
+
+    Returns:
+        dict: Usage statistics including users, invoices, customers, storage
+    """
+    import os
+
+    try:
+        # Get user count (excluding Administrator and Guest)
+        users = frappe.db.count("User", filters={
+            "enabled": 1,
+            "user_type": "System User",
+            "name": ["not in", ["Administrator", "Guest"]]
+        })
+
+        # Get invoices this month
+        from frappe.utils import get_first_day, get_last_day, today
+        first_day = get_first_day(today())
+        last_day = get_last_day(today())
+
+        invoices_this_month = 0
+        if frappe.db.exists("DocType", "Sales Invoice"):
+            invoices_this_month = frappe.db.count("Sales Invoice", filters={
+                "docstatus": 1,
+                "posting_date": ["between", [first_day, last_day]]
+            })
+
+        # Get customer count
+        customers = 0
+        if frappe.db.exists("DocType", "Customer"):
+            customers = frappe.db.count("Customer")
+
+        # Get supplier count
+        suppliers = 0
+        if frappe.db.exists("DocType", "Supplier"):
+            suppliers = frappe.db.count("Supplier")
+
+        # Get company count
+        companies = 0
+        if frappe.db.exists("DocType", "Company"):
+            companies = frappe.db.count("Company")
+
+        # Calculate storage used (database + files)
+        storage_mb = 0.0
+        try:
+            # Get database size
+            site_name = frappe.local.site
+            db_name = frappe.conf.db_name
+
+            # Get database size in MB
+            db_size = frappe.db.sql("""
+                SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) as size_mb
+                FROM information_schema.tables
+                WHERE table_schema = %s
+            """, (db_name,), as_dict=True)
+
+            if db_size and db_size[0].get("size_mb"):
+                storage_mb += float(db_size[0]["size_mb"])
+
+            # Get files size (public + private)
+            site_path = frappe.get_site_path()
+            for folder in ["public/files", "private/files"]:
+                folder_path = os.path.join(site_path, folder)
+                if os.path.exists(folder_path):
+                    for dirpath, dirnames, filenames in os.walk(folder_path):
+                        for f in filenames:
+                            fp = os.path.join(dirpath, f)
+                            if os.path.exists(fp):
+                                storage_mb += os.path.getsize(fp) / 1024 / 1024
+
+        except Exception as e:
+            print(f"[USAGE] Error calculating storage: {e}")
+
+        return {
+            "success": True,
+            "users": users,
+            "invoices_this_month": invoices_this_month,
+            "customers": customers,
+            "suppliers": suppliers,
+            "companies": companies,
+            "storage_mb": round(storage_mb, 2)
+        }
+
+    except Exception as e:
+        print(f"[USAGE] Error getting usage stats: {e}")
+        return {"success": False, "error": str(e)}
