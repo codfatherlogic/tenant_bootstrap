@@ -133,21 +133,11 @@ app_license = "mit"
 # Hook on document methods and events - Enforce SaaS plan limits
 
 doc_events = {
-    "User": {
-        "before_insert": "tenant_bootstrap.usage_limits.validate_user_limit"
-    },
-    "Customer": {
-        "before_insert": "tenant_bootstrap.usage_limits.validate_customer_limit"
-    },
-    "Supplier": {
-        "before_insert": "tenant_bootstrap.usage_limits.validate_supplier_limit"
-    },
-    "Company": {
-        "before_insert": "tenant_bootstrap.usage_limits.validate_company_limit"
-    },
-    "Sales Invoice": {
-        "before_submit": "tenant_bootstrap.usage_limits.validate_invoice_limit"
-    }
+	"User": {"before_insert": "tenant_bootstrap.usage_limits.validate_user_limit"},
+	"Customer": {"before_insert": "tenant_bootstrap.usage_limits.validate_customer_limit"},
+	"Supplier": {"before_insert": "tenant_bootstrap.usage_limits.validate_supplier_limit"},
+	"Company": {"before_insert": "tenant_bootstrap.usage_limits.validate_company_limit"},
+	"Sales Invoice": {"before_submit": "tenant_bootstrap.usage_limits.validate_invoice_limit"},
 }
 
 # Scheduled Tasks
@@ -259,4 +249,3 @@ doc_events = {
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
