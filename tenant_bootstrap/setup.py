@@ -22,6 +22,8 @@ import traceback
 
 import frappe
 
+from tenant_bootstrap.controller_auth import require_controller
+
 
 def setup_company(config_b64):
 	"""
@@ -302,6 +304,7 @@ def get_usage_stats():
 	Returns:
 	    dict: Usage statistics including users, invoices, customers, storage
 	"""
+	require_controller()
 	import os
 
 	try:
