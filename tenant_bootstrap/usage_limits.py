@@ -6,6 +6,8 @@ Validates that tenants don't exceed their plan limits.
 import frappe
 from frappe import _
 
+from tenant_bootstrap.controller_auth import require_controller
+
 # Cache key for plan limits
 LIMITS_CACHE_KEY = "saas_plan_limits"
 
@@ -209,6 +211,7 @@ def sync_plan_limits(
 	Returns:
 	    dict: Success status
 	"""
+	require_controller()
 	try:
 		limits = {
 			"max_users": int(max_users) if max_users else 0,
@@ -236,4 +239,5 @@ def get_current_limits():
 	Returns:
 	    dict: Current plan limits
 	"""
+	require_controller()
 	return {"success": True, "limits": get_plan_limits()}

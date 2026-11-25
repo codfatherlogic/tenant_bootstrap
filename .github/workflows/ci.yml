@@ -33,6 +33,10 @@ jobs:
         run: |
           ruff check .
 
+      - name: Unit tests (no bench needed)
+        run: |
+          python -m unittest discover -s tests -t . -v
+
       - name: Verify module structure
         run: |
           # Check that required files exist
